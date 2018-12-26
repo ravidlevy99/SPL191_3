@@ -2,6 +2,7 @@ package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
+import bgu.spl.net.srv.bidi.ConnectionHandler;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -115,5 +116,12 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     private static void releaseBuffer(ByteBuffer buff) {
         BUFFER_POOL.add(buff);
     }
+
+    @Override
+    public void send(T msg)
+    {
+
+    }
+
 
 }

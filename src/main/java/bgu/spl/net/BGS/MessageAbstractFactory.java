@@ -1,48 +1,77 @@
 package bgu.spl.net.BGS;
 
-public class MessageAbstractFactory {
+import bgu.spl.net.api.MessageEncoderDecoder;
 
-    public Message get(int opcode, String content)
-    {
-        if(opcode < 9)
-            return getFromClient(content);
-        else if(opcode < 12)
-            return getFromServer(content);
+import java.util.Arrays;
+
+public class MessageAbstractFactory implements MessageEncoderDecoder<Message> {
+
+    private Message message;
+    private short opcode = 0;
+    private int len;
+
+    public Message get() {
+        if (opcode < 9)
+            return getFromClient();
+        else if (opcode < 12)
+            return getFromServer();
         else
             return null;
     }
 
-    public MessageFromClient getFromClient(String content)
-    {
-        if(content.startsWith("REGISTER"))
-            return new RegsiterMessage(content);
-        else if(content.startsWith("LOGIN"))
-            return new LoginMessage(content);
-        else if(content.startsWith("LOGOUT"))
+    public MessageFromClient getFromClient() {
+        if (opcode == 1)
+            return new RegsiterMessage();
+        else if (opcode == 2)
+            return new LoginMessage();
+        else if (opcode == 3)
             return new LogoutMessage();
-        else if(content.startsWith("FOLLOW"))
-            return new FollowMessage(content);
-        else if(content.startsWith("POST"))
-            return new PostMessage(content);
-        else if(content.startsWith("PM")) //Sliding into his/her DMs
-            return new PrivateMessage(content);
-        else if(content.startsWith("USERLIST"))
+        else if (opcode == 4)
+            return new FollowMessage();
+        else if (opcode == 5)
+            return new PostMessage("");
+        else if (opcode == 6) //Sliding into his/her DMs
+            return new PrivateMessage("");
+        else if (opcode == 7)
             return new UserListMessage();
-        else if(content.startsWith("STAT"))
-            return new StatsMessage(content);
+        else if (opcode == 8)
+            return new StatsMessage("");
         else
             return null;
     }
 
-    public MessageFromServer getFromServer(String content)
-    {
-        if(content.startsWith("NOTIFICATION"))
-            return new NotificationMessage(content);
-        else if(content.startsWith("ACK"))
-            return new ACKMessage(content);
-        else if(content.startsWith("Error"))
-            return new ErrorMessage(content);
+    public MessageFromServer getFromServer() {
+        if (opcode == 9)
+            return new NotificationMessage("");
+        else if (opcode == 10)
+            return new ACKMessage("");
+        else if (opcode == 11)
+            return new ErrorMessage("");
         else
             return null;
+    }
+
+    @Override
+    public Message decodeNextByte(byte nextByte) {
+
+        if(len < 2)
+        {
+            if(len == 0)
+                opcode += (short) (nextByte & 0xff << 8);
+            else
+                opcode += (short) (nextByte & 0xff);
+            len++;
+            return null;
+        }
+        if (len == 2)
+            message = get();
+        if(nextByte != '\0')
+           len++;
+        return message.decodeNextByte(nextByte, len-3);
+    }
+
+    @Override
+    public byte[] encode(Message message) {
+        return new byte[0];
     }
 }

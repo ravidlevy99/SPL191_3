@@ -2,20 +2,10 @@ package bgu.spl.net.BGS;
 
 public abstract class MessageFromServer implements Message{
 
+    protected byte[] bytes;
+
     public MessageFromServer()
     {
-
-    }
-
-    @Override
-    public void edit(String content)
-    {
-
-    }
-
-    @Override
-    public void send()
-    {
-
+        bytes = new byte[1024];
     }
 }

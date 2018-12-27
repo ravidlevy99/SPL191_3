@@ -2,22 +2,44 @@ package bgu.spl.net.BGS;
 
 public class FollowMessage extends MessageFromClient {
 
-    private boolean followOrUnfollow;
-    private int numberOfUsers;
+    private short followOrUnfollow, numberOfUsers, usersleft;
     private String[] usernames;
+    private int index;
 
-    public FollowMessage(String content)
+    public FollowMessage()
     {
         super();
-        if(content.charAt(7) == '0')
-            followOrUnfollow = true;
-        else
-            followOrUnfollow = false;
-        numberOfUsers = Integer.parseInt(content.substring(9, 9 + content.substring(9).indexOf(' ')));
-        if(numberOfUsers > 0)
+        numberOfUsers = 0;
+        usersleft = 0;
+        index = 3;
+    }
+
+    public Message decodeNextByte(byte b, int len)
+    {
+        if(b == '\0')
         {
-            String users = content.substring(10 + content.substring(9).indexOf(' '));
-            usernames = users.split( " ");
+            usernames[numberOfUsers - usersleft] = "";
+            for(int i = index; i<bytes.length; i++)
+                usernames[numberOfUsers - usersleft] += bytes[i];
+            index = bytes.length;
+            usersleft--;
+            if(usersleft == 0)
+                return this;
         }
+        else {
+            bytes[len] = b;
+            if (len == 0)
+                followOrUnfollow = (short) b;
+            else if (len == 1 | len == 2) {
+                if (len == 1)
+                    numberOfUsers += (short) (b & 0xff << 8);
+                else {
+                    numberOfUsers += (short) (b & 0xff);
+                    usersleft = numberOfUsers;
+                    usernames = new String[numberOfUsers];
+                }
+            }
+        }
+        return null;
     }
 }

@@ -6,4 +6,10 @@ public class UserListMessage extends MessageFromClient {
     {
         super();
     }
+
+
+    @Override
+    public Message decodeNextByte(byte b) {
+        return this;
+    }
 }

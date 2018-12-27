@@ -8,7 +8,7 @@ public class MessageAbstractFactory implements MessageEncoderDecoder<Message> {
 
     private Message message;
     private short opcode = 0;
-    private int len;
+    private int len = 0;
 
     public Message get() {
         if (opcode < 9)
@@ -29,13 +29,13 @@ public class MessageAbstractFactory implements MessageEncoderDecoder<Message> {
         else if (opcode == 4)
             return new FollowMessage();
         else if (opcode == 5)
-            return new PostMessage("");
+            return new PostMessage();
         else if (opcode == 6) //Sliding into his/her DMs
-            return new PrivateMessage("");
+            return new PrivateMessage();
         else if (opcode == 7)
             return new UserListMessage();
         else if (opcode == 8)
-            return new StatsMessage("");
+            return new StatsMessage();
         else
             return null;
     }
@@ -64,10 +64,12 @@ public class MessageAbstractFactory implements MessageEncoderDecoder<Message> {
             return null;
         }
         if (len == 2)
+        {
             message = get();
-        if(nextByte != '\0')
-           len++;
-        return message.decodeNextByte(nextByte, len-3);
+            len = 0;
+            opcode = 0;
+        }
+        return ((MessageFromClient)message).decodeNextByte(nextByte);
     }
 
     @Override

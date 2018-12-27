@@ -7,7 +7,7 @@ public class LogoutMessage extends MessageFromClient {
         super();
     }
 
-    public Message decodeNextByte(byte b, int len)
+    public Message decodeNextByte(byte b)
     {
         return this;
     }

@@ -1,44 +1,55 @@
 package bgu.spl.net.BGS;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
 public class FollowMessage extends MessageFromClient {
 
     private short followOrUnfollow, numberOfUsers, usersleft;
     private String[] usernames;
-    private int index;
+    private boolean passedTwo = false;
 
     public FollowMessage()
     {
         super();
         numberOfUsers = 0;
         usersleft = 0;
-        index = 3;
     }
 
-    public Message decodeNextByte(byte b, int len)
+    public Message decodeNextByte(byte b)
     {
+        if (currentByte >= bytes.length) {
+            bytes = Arrays.copyOf(bytes, currentByte * 2);
+        }
+
         if(b == '\0')
         {
-            usernames[numberOfUsers - usersleft] = "";
-            for(int i = index; i<bytes.length; i++)
-                usernames[numberOfUsers - usersleft] += bytes[i];
-            index = bytes.length;
+            usernames[numberOfUsers - usersleft] = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
+            currentByte = 0;
             usersleft--;
+            currentByte = 0;
             if(usersleft == 0)
                 return this;
         }
+
         else {
-            bytes[len] = b;
-            if (len == 0)
-                followOrUnfollow = (short) b;
-            else if (len == 1 | len == 2) {
-                if (len == 1)
-                    numberOfUsers += (short) (b & 0xff << 8);
-                else {
-                    numberOfUsers += (short) (b & 0xff);
-                    usersleft = numberOfUsers;
-                    usernames = new String[numberOfUsers];
+            if (!passedTwo)
+            {
+                if (currentByte == 0)
+                    followOrUnfollow = (short) b;
+                else if (currentByte == 1 | currentByte == 2) {
+                    if (currentByte == 1)
+                        numberOfUsers += (short) (b & 0xff << 8);
+                    else {
+                        numberOfUsers += (short) (b & 0xff);
+                        usersleft = numberOfUsers;
+                        usernames = new String[numberOfUsers];
+                        passedTwo = true;
+                    }
                 }
             }
+            bytes[currentByte] = b;
+            currentByte++;
         }
         return null;
     }

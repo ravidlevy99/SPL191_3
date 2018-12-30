@@ -17,6 +17,7 @@ public class ConnectionImpl <T> implements Connections<T> {
     public boolean send(int connectionId, T msg) {
         ConnectionHandler<T> connectionHandler = connectionHandlerHashMap.get(connectionId);
         connectionHandler.send(msg);
+        return true;
     }
 
     @Override

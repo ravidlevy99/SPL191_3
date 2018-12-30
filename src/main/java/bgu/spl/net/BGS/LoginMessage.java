@@ -24,14 +24,10 @@ public class LoginMessage extends MessageFromClient {
         if(b == '\0')
         {
             zeroCounter++;
-            if(zeroCounter == 1) {
-                username = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
-                currentByte = 0;
-            }
-            else {
-                password = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
-                currentByte = 0;
-            }
+            if(zeroCounter == 1)
+                username = popString();
+            else
+                password = popString();
         }
 
         else {
@@ -45,12 +41,10 @@ public class LoginMessage extends MessageFromClient {
         return null;
     }
 
-    @Override
-    public MessageFromServer processMessagefromClient(Message msg, BGSDataBase database, int connectionId) {
-        if(database.checkPassword(username , password))
-        {
-            database.logInUser();
-        }
+    public String popString()
+    {
+        String output = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
+        currentByte = 0;
+        return output;
     }
-
 }

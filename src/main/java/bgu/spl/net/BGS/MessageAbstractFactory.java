@@ -73,7 +73,8 @@ public class MessageAbstractFactory implements MessageEncoderDecoder<Message> {
     }
 
     @Override
-    public byte[] encode(Message message) {
-        return new byte[0];
+    public byte[] encode(Message message)
+    {
+        return ((MessageFromClient)message).encode();
     }
 }

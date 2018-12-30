@@ -12,13 +12,14 @@ public class BGSDataBase {
     private ConcurrentHashMap<String, BlockingDeque<String>> FollowList;
     private ConcurrentHashMap<String, BlockingDeque<String>> UnFollowList;
 
+
     public BGSDataBase() {
         UserInfo = new ConcurrentHashMap<>();
         LoggedInUsers = new ConcurrentHashMap<>();
         FollowList = new ConcurrentHashMap<>();
         UnFollowList = new ConcurrentHashMap<>();
     }
-    
+
     public boolean checkPassword(String userName, String password) {
         String currentPassword = UserInfo.get(userName);
         return password.equals(currentPassword);
@@ -35,15 +36,18 @@ public class BGSDataBase {
         UserInfo.put(userName, password);
     }
 
-    public boolean checkIfAlreadyRegistered(String userName) {
+    public boolean checkIfAlreadyRegistered(String userName)
+    {
         return UserInfo.containsKey(userName);
     }
 
-    public boolean checkIfLoggedIn(String userName) {
+    public boolean checkIfLoggedIn(String userName)
+    {
         return LoggedInUsers.containsKey(userName);
     }
 
-    public void logInUser(String userName, int connectionId) {
+    public void logInUser(String userName, int connectionId)
+    {
         LoggedInUsers.put(userName, connectionId);
     }
 

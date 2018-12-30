@@ -21,7 +21,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
     @Override
     public void process(Message msg) {
-        
+
     }
 
     @Override
@@ -33,4 +33,6 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     {
         this.dataBase = dataBase;
     }
+
+    public void process (LOginM)
 }

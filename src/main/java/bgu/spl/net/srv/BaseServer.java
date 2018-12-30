@@ -13,6 +13,7 @@ public abstract class BaseServer<T> implements Server<T> {
     private final Supplier<BidiMessagingProtocol<T>> protocolFactory;
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
     private ServerSocket sock;
+    protected int connectionId;
 
     public BaseServer(
             int port,
@@ -23,11 +24,13 @@ public abstract class BaseServer<T> implements Server<T> {
         this.protocolFactory = protocolFactory;
         this.encdecFactory = encdecFactory;
 		this.sock = null;
+		connectionId = 0;
     }
 
     @Override
     public void serve() {
 
+        connectionId++;
         try (ServerSocket serverSock = new ServerSocket(port)) {
 			System.out.println("Server started");
 

@@ -21,6 +21,8 @@ public class BGSDataBase {
     }
 
     public boolean checkPassword(String userName, String password) {
+        if(!checkIfAlreadyRegistered(userName))
+            return false;
         String currentPassword = UserInfo.get(userName);
         return password.equals(currentPassword);
     }

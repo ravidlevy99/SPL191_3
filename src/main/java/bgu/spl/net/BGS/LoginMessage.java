@@ -44,4 +44,13 @@ public class LoginMessage extends MessageFromClient {
 
         return null;
     }
+
+    @Override
+    public MessageFromServer processMessagefromClient(Message msg, BGSDataBase database, int connectionId) {
+        if(database.checkPassword(username , password))
+        {
+            database.logInUser();
+        }
+    }
+
 }

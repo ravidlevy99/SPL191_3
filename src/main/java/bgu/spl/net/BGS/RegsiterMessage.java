@@ -7,6 +7,7 @@ public class RegsiterMessage extends MessageFromClient {
 
     private int zeroCounter;
     private String username, password;
+    private short opcode = 1;
 
     public RegsiterMessage()
     {
@@ -47,11 +48,11 @@ public class RegsiterMessage extends MessageFromClient {
 
     public MessageFromServer processMessageFromClient(BGSDataBase dataBase) {
         if(dataBase.checkIfAlreadyRegistered(username))
-            return new ErrorMessage((short)(1));
+            return new ErrorMessage(opcode);
         else
         {
             dataBase.registerUser(username , password);
-            return new ACKMessage();
+            return new ACKMessage(opcode);
         }
     }
 }

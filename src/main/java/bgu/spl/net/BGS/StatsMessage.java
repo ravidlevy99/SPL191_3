@@ -25,5 +25,6 @@ public class StatsMessage extends MessageFromClient {
         }
         bytes[currentByte] = b;
         currentByte++;
-        return null;    }
+        return null;
+    }
 }

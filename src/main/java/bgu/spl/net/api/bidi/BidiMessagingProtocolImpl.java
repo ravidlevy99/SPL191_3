@@ -10,16 +10,18 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
     boolean shouldTerminate = false;
     private BGSDataBase dataBase;
-    private Connections<Message>
+    private Connections<Message> connections;
+    private int connectionId;
 
     @Override
     public void start(int connectionId, Connections<Message> connections) {
-
+        this.connections = connections;
+        this.connectionId = connectionId;
     }
 
     @Override
     public void process(Message msg) {
-
+        
     }
 
     @Override

@@ -12,4 +12,8 @@ public abstract class MessageFromClient implements Message{
     }
 
     public abstract Message decodeNextByte(byte b);
+
+    public MessageFromServer processMessagefromClient(Message msg , BGSDataBase database){
+        return msg.processMessageFromClient(database);
+    }
 }

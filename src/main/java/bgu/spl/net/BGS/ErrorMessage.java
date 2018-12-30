@@ -2,12 +2,13 @@ package bgu.spl.net.BGS;
 
 public class ErrorMessage extends MessageFromServer {
 
-    private int opcode;
+    private short opcode;
 
-    public ErrorMessage(String content)
+
+    public ErrorMessage(short opcode)
     {
         super();
-        opcode = Integer.parseInt(content.substring(1 + content.indexOf(' ')));
+        this.opcode = opcode;
     }
 
 }

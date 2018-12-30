@@ -44,4 +44,14 @@ public class RegsiterMessage extends MessageFromClient {
 
         return null;
     }
+
+    public MessageFromServer processMessageFromClient(BGSDataBase dataBase) {
+        if(dataBase.checkIfAlreadyRegistered(username))
+            return new ErrorMessage((short)(1));
+        else
+        {
+            dataBase.registerUser(username , password);
+            return new ACKMessage();
+        }
+    }
 }

@@ -69,12 +69,12 @@ public class MessageAbstractFactory implements MessageEncoderDecoder<Message> {
             len = 0;
             opcode = 0;
         }
-        return ((MessageFromClient)message).decodeNextByte(nextByte);
+        return message.decodeNextByte(nextByte);
     }
 
     @Override
     public byte[] encode(Message message)
     {
-        return ((MessageFromClient)message).encode();
+        return message.encode();
     }
 }

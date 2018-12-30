@@ -2,6 +2,8 @@ package bgu.spl.net.BGS;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Vector;
 
 public class FollowMessage extends MessageFromClient {
 
@@ -52,5 +54,21 @@ public class FollowMessage extends MessageFromClient {
             currentByte++;
         }
         return null;
+    }
+
+    public LinkedList<String> getUsernames()
+    {
+        LinkedList list = new LinkedList();
+
+        for (int i = 0; i < usernames.length; i++) {
+            list.add(usernames[i]);
+        }
+
+        return list;
+    }
+
+    public short followOrUnfollow()
+    {
+        return followOrUnfollow;
     }
 }

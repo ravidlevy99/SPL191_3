@@ -46,13 +46,16 @@ public class RegsiterMessage extends MessageFromClient {
         return null;
     }
 
-    public MessageFromServer processMessageFromClient(BGSDataBase dataBase) {
-        if(dataBase.checkIfAlreadyRegistered(username))
-            return new ErrorMessage(opcode);
-        else
-        {
-            dataBase.registerUser(username , password);
-            return new ACKMessage(opcode);
-        }
+    @Override
+    public byte[] encode() {
+        return new byte[0];
+    }
+
+    public String getUserName() {
+        return username;
+    }
+
+    public String getPassWord() {
+        return password;
     }
 }

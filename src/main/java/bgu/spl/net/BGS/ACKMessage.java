@@ -4,6 +4,9 @@ public class ACKMessage extends MessageFromServer {
 
     private short opcode;
     private String optional;
+    private short numOfFollows;
+    private short followOPCODE;
+
 
     public ACKMessage(short opcode)
     {
@@ -11,10 +14,21 @@ public class ACKMessage extends MessageFromServer {
         this.opcode = opcode;
     }
 
-    public ACKMessage(short opcode , String optional)
+    public void setUserList(short followOPCODE ,short numOfFollows , String userList)
     {
-        super();
-        this.opcode = opcode;
-        this.optional = optional;
+        this.followOPCODE = followOPCODE;
+        this.optional = userList;
+        this.numOfFollows = numOfFollows;
+    }
+
+
+    @Override
+    public Message decodeNextByte(byte b) {
+        return null;
+    }
+
+    @Override
+    public byte[] encode() {
+        return new byte[0];
     }
 }

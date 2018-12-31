@@ -11,4 +11,13 @@ public class ErrorMessage extends MessageFromServer {
         this.opcode = opcode;
     }
 
+    @Override
+    public Message decodeNextByte(byte b) {
+        return null;
+    }
+
+    @Override
+    public byte[] encode() {
+        return new byte[0];
+    }
 }

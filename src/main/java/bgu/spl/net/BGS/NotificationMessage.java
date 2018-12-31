@@ -9,4 +9,14 @@ public class NotificationMessage extends MessageFromServer {
     {
         super();
     }
+
+    @Override
+    public Message decodeNextByte(byte b) {
+        return null;
+    }
+
+    @Override
+    public byte[] encode() {
+        return new byte[0];
+    }
 }

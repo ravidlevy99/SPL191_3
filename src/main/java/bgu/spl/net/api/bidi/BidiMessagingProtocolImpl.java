@@ -89,6 +89,16 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                 ErrorMessage response = new ErrorMessage((short) (4));
                 connections.send(connectionId, response);
             }
+            else
+            {
+                short numOfUsers = (short)(list.size());
+                String userList ="";
+                for(String user : list)
+                    userList += list + "\0";
+                ACKMessage response = new ACKMessage((short)(4));
+                response.setUserList(msg.followOrUnfollow() ,numOfUsers , userList);
+                connections.send(connectionId , response);
+            }
         }
     }
 
@@ -101,7 +111,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
         else
         {
-            //TODO:IMPLEMENT THIS SHIT
+
         }
     }
 }

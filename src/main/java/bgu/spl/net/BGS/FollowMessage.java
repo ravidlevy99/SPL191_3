@@ -56,6 +56,11 @@ public class FollowMessage extends MessageFromClient {
         return null;
     }
 
+    @Override
+    public byte[] encode() {
+        return new byte[0];
+    }
+
     public LinkedList<String> getUsernames()
     {
         LinkedList list = new LinkedList();

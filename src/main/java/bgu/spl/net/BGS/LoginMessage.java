@@ -41,10 +41,22 @@ public class LoginMessage extends MessageFromClient {
         return null;
     }
 
+    @Override
+    public byte[] encode() {
+        return new byte[0];
+    }
+
     public String popString()
     {
         String output = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
         currentByte = 0;
         return output;
+    }
+
+    public String getUserName(){
+        return username;
+    }
+    public String getPassWord(){
+        return password;
     }
 }

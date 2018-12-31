@@ -8,7 +8,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class BGSDataBase {
 
     private ConcurrentHashMap<String, String> UserInfo;
-    private ConcurrentHashMap<String, Integer> LoggedInUsers;
+    private ConcurrentHashMap<Integer, String> LoggedInUsers;
     private ConcurrentHashMap<String, BlockingDeque<String>> FollowList;
     private ConcurrentHashMap<String, BlockingDeque<String>> UnFollowList;
 
@@ -21,6 +21,8 @@ public class BGSDataBase {
     }
 
     public boolean checkPassword(String userName, String password) {
+        if(!checkIfAlreadyRegistered(userName))
+            return false;
         String currentPassword = UserInfo.get(userName);
         return password.equals(currentPassword);
     }
@@ -41,14 +43,14 @@ public class BGSDataBase {
         return UserInfo.containsKey(userName);
     }
 
-    public boolean checkIfLoggedIn(String userName)
+    public boolean checkIfLoggedIn(int connectionId)
     {
-        return LoggedInUsers.containsKey(userName);
+        return LoggedInUsers.containsKey(connectionId);
     }
 
     public void logInUser(String userName, int connectionId)
     {
-        LoggedInUsers.put(userName, connectionId);
+        LoggedInUsers.put(connectionId, userName);
     }
 
     public LinkedList<String> follow(String userName, LinkedList<String> followList) {
@@ -86,8 +88,15 @@ public class BGSDataBase {
         return output;
     }
 
-    public void logout(String userName)
+    public void logout(int connectionId)
     {
-        LoggedInUsers.remove(userName);
+        LoggedInUsers.remove(connectionId);
     }
+
+    public String getUsernameByConnectionId(int connectionId)
+    {
+        return LoggedInUsers.get(connectionId);
+    }
+
+
 }

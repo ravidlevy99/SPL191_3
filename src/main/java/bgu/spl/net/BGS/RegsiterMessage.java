@@ -7,7 +7,7 @@ public class RegsiterMessage extends MessageFromClient {
 
     private int zeroCounter;
     private String username, password;
-    private static final short opcode = 1;
+    private short opcode = 1;
 
     public RegsiterMessage()
     {
@@ -25,10 +25,14 @@ public class RegsiterMessage extends MessageFromClient {
         if(b == '\0')
         {
             zeroCounter++;
-            if(zeroCounter == 1)
-                username = popString();
-            else
-                password = popString();
+            if(zeroCounter == 1) {
+                username = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
+                currentByte = 0;
+            }
+            else {
+                password = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
+                currentByte = 0;
+            }
         }
 
         else {
@@ -42,19 +46,16 @@ public class RegsiterMessage extends MessageFromClient {
         return null;
     }
 
-    public String popString() {
-        String output = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
-        currentByte = 0;
-        return output;
+    @Override
+    public byte[] encode() {
+        return new byte[0];
     }
 
-    public MessageFromServer processMessageFromClient(BGSDataBase dataBase) {
-        if(dataBase.checkIfAlreadyRegistered(username))
-            return new ErrorMessage(opcode);
-        else
-        {
-            dataBase.registerUser(username , password);
-            return new ACKMessage(opcode);
-        }
+    public String getUserName() {
+        return username;
+    }
+
+    public String getPassWord() {
+        return password;
     }
 }

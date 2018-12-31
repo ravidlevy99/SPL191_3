@@ -2,9 +2,8 @@ package bgu.spl.net.BGS;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
 
-import java.util.Arrays;
 
-public class MessageAbstractFactory implements MessageEncoderDecoder<Message> {
+public class BidiMessageEncoderDecoder implements MessageEncoderDecoder<Message> {
 
     private Message message;
     private short opcode = 0;
@@ -30,7 +29,7 @@ public class MessageAbstractFactory implements MessageEncoderDecoder<Message> {
             return new FollowMessage();
         else if (opcode == 5)
             return new PostMessage();
-        else if (opcode == 6) //Sliding into his/her DMs
+        else if (opcode == 6) //Sliding into her DMs
             return new PrivateMessage();
         else if (opcode == 7)
             return new UserListMessage();
@@ -44,9 +43,9 @@ public class MessageAbstractFactory implements MessageEncoderDecoder<Message> {
         if (opcode == 9)
             return new NotificationMessage("");
         else if (opcode == 10)
-            return new ACKMessage("");
+            return new ACKMessage((opcode));
         else if (opcode == 11)
-            return new ErrorMessage("");
+            return new ErrorMessage(opcode);
         else
             return null;
     }
@@ -69,12 +68,12 @@ public class MessageAbstractFactory implements MessageEncoderDecoder<Message> {
             len = 0;
             opcode = 0;
         }
-        return ((MessageFromClient)message).decodeNextByte(nextByte);
+        return message.decodeNextByte(nextByte);
     }
 
     @Override
     public byte[] encode(Message message)
     {
-        return ((MessageFromClient)message).encode();
+        return message.encode();
     }
 }

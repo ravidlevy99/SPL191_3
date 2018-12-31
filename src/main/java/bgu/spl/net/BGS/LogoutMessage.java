@@ -11,4 +11,9 @@ public class LogoutMessage extends MessageFromClient {
     {
         return this;
     }
+
+    @Override
+    public byte[] encode() {
+        return new byte[0];
+    }
 }

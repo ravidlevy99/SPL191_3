@@ -5,7 +5,7 @@ public class ACKMessage extends MessageFromServer {
     private int opcode;
     private String optional;
 
-    public ACKMessage()
+    public ACKMessage(short opcode)
     {
         super();
     }

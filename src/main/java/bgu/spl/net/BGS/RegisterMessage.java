@@ -1,15 +1,17 @@
 package bgu.spl.net.BGS;
 
+import bgu.spl.net.api.bidi.BidiMessagingProtocolImpl;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-public class RegsiterMessage extends MessageFromClient {
+public class RegisterMessage extends MessageFromClient {
 
     private int zeroCounter;
     private String username, password;
     private short opcode = 1;
 
-    public RegsiterMessage()
+    public RegisterMessage()
     {
         super();
         zeroCounter = 0;
@@ -53,5 +55,10 @@ public class RegsiterMessage extends MessageFromClient {
 
     public String getPassWord() {
         return password;
+    }
+
+    @Override
+    public void process(BidiMessagingProtocolImpl messagingProtocol) {
+        messagingProtocol.processMessage(this);
     }
 }

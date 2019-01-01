@@ -1,5 +1,7 @@
 package bgu.spl.net.BGS;
 
+import bgu.spl.net.api.bidi.BidiMessagingProtocolImpl;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -43,5 +45,20 @@ public class PrivateMessage extends MessageFromClient {
             return this;
 
         return null;
+    }
+
+    @Override
+    public void process(BidiMessagingProtocolImpl messagingProtocol) {
+        messagingProtocol.processMessage(this);
+    }
+
+    public String getUsername()
+    {
+        return username;
+    }
+
+    public String getContent()
+    {
+        return content;
     }
 }

@@ -1,5 +1,7 @@
 package bgu.spl.net.BGS;
 
+import bgu.spl.net.api.bidi.BidiMessagingProtocolImpl;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -26,5 +28,15 @@ public class StatsMessage extends MessageFromClient {
         bytes[currentByte] = b;
         currentByte++;
         return null;
+    }
+
+    @Override
+    public void process(BidiMessagingProtocolImpl messagingProtocol) {
+        messagingProtocol.processMessage(this);
+    }
+
+    public String getUsername()
+    {
+        return username;
     }
 }

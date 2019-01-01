@@ -1,5 +1,7 @@
 package bgu.spl.net.BGS;
 
+import bgu.spl.net.api.bidi.BidiMessagingProtocolImpl;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -47,6 +49,11 @@ public class LoginMessage extends MessageFromClient {
         String output = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
         currentByte = 0;
         return output;
+    }
+
+    @Override
+    public void process(BidiMessagingProtocolImpl messagingProtocol) {
+        messagingProtocol.processMessage(this);
     }
 
     public String getUserName(){

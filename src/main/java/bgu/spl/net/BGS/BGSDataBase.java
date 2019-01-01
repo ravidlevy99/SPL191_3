@@ -3,6 +3,8 @@ package bgu.spl.net.BGS;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import sun.rmi.runtime.Log;
 
+import javax.management.Notification;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,13 +16,16 @@ public class BGSDataBase {
     private ConcurrentHashMap<Integer, String> LoggedInUsers;
     private ConcurrentHashMap<String, BlockingDeque<String>> FollowList;
     private ConcurrentHashMap<String, BlockingDeque<String>> UnFollowList;
-
+    private ConcurrentHashMap<String, BlockingDeque<NotificationMessage>> Notifications;
+    private ConcurrentHashMap<String, Stats> usersStats;
 
     public BGSDataBase() {
         UserInfo = new ConcurrentHashMap<>();
         LoggedInUsers = new ConcurrentHashMap<>();
         FollowList = new ConcurrentHashMap<>();
         UnFollowList = new ConcurrentHashMap<>();
+        Notifications = new ConcurrentHashMap<>();
+        usersStats = new ConcurrentHashMap<>();
     }
 
     public boolean checkPassword(String userName, String password) {
@@ -35,6 +40,8 @@ public class BGSDataBase {
             BQ.add(userName);
         FollowList.put(userName, new LinkedBlockingDeque<>());
         UnFollowList.put(userName, new LinkedBlockingDeque<>());
+        Notifications.put(userName, new LinkedBlockingDeque<>());
+        usersStats.put(userName, new Stats());
 
         for (String user : UserInfo.keySet())
             UnFollowList.get(userName).add(user);
@@ -71,6 +78,8 @@ public class BGSDataBase {
                 if (currentUnFollowList.contains(name)) {
                     currentUnFollowList.remove(name);
                     currentFollowList.add(name);
+                    usersStats.get(userName).follow();
+                    usersStats.get(name).followed();
                     output.add(name);
                 }
             }
@@ -89,11 +98,18 @@ public class BGSDataBase {
                 if(currentFollowList.contains(name)){
                     currentFollowList.remove(name);
                     currentUnFollowList.add(name);
+                    usersStats.get(userName).unfollow();
+                    usersStats.get(name).unfollowed();
                     output.add(name);
                 }
             }
         }
         return output;
+    }
+
+    public BlockingDeque<NotificationMessage> getUpdated(String username)
+    {
+        return Notifications.get(username);
     }
 
     public void logout(int connectionId)
@@ -122,7 +138,23 @@ public class BGSDataBase {
 
     public void addToNotify(String username, NotificationMessage message)
     {
-        //TODO: Implement an addition of a notification to a data structure of a certain user a new hashmap
-        throw new NotImplementedException();
+        if(!Notifications.containsKey(username))
+            Notifications.put(username, new LinkedBlockingDeque<>());
+        Notifications.get(username).addLast(message);
+    }
+
+    public Collection<String> getUsernames()
+    {
+        return UserInfo.keySet();
+    }
+
+    public void post(int connectionId)
+    {
+        usersStats.get(LoggedInUsers.get(connectionId)).post();
+    }
+
+    public Stats getStats(String username)
+    {
+        return usersStats.get(username);
     }
 }

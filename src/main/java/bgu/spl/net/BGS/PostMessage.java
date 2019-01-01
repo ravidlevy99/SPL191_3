@@ -1,5 +1,7 @@
 package bgu.spl.net.BGS;
 
+import bgu.spl.net.api.bidi.BidiMessagingProtocolImpl;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -66,5 +68,10 @@ public class PostMessage extends MessageFromClient {
     public String getContent()
     {
         return content;
+    }
+
+    @Override
+    public void process(BidiMessagingProtocolImpl messagingProtocol) {
+        messagingProtocol.processMessage(this);
     }
 }

@@ -20,7 +20,7 @@ public class BidiMessageEncoderDecoder implements MessageEncoderDecoder<Message>
 
     public MessageFromClient getFromClient() {
         if (opcode == 1)
-            return new RegsiterMessage();
+            return new RegisterMessage();
         else if (opcode == 2)
             return new LoginMessage();
         else if (opcode == 3)

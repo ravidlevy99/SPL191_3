@@ -1,5 +1,7 @@
 package bgu.spl.net.BGS;
 
+import bgu.spl.net.api.bidi.BidiMessagingProtocolImpl;
+
 public abstract class MessageFromClient implements Message{
 
     protected byte[] bytes;
@@ -13,4 +15,5 @@ public abstract class MessageFromClient implements Message{
 
     public abstract Message decodeNextByte(byte b);
 
+    public abstract void process(BidiMessagingProtocolImpl messagingProtocol);
 }

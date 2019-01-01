@@ -5,6 +5,7 @@ import bgu.spl.net.BGS.*;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,15 +41,15 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     public void processMessage(RegisterMessage msg)
     {
         ConcurrentHashMap<String, String> UserInfo  = dataBase.getUserInfo();
-        synchronized (UserInfo) {
-            if (dataBase.checkIfAlreadyRegistered(msg.getUserName())) {
+        synchronized (UserInfo){
+            if (dataBase.checkIfAlreadyRegistered(msg.getUserName()) || dataBase.checkIfLoggedIn(connectionId)) {
                 ErrorMessage response = new ErrorMessage();
                 response.setOpcode((short) (1));
                 connections.send(connectionId, response);
             } else {
                 dataBase.registerUser(msg.getUserName(), msg.getPassWord());
                 ACKMessage response = new ACKMessage();
-                response.setOpcode((short) (1));
+                response.setOpcode((short)(1));
                 connections.send(connectionId, response);
             }
         }
@@ -56,28 +57,34 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
     public void processMessage(LoginMessage msg)
     {
-        if(!dataBase.checkIfLoggedIn(connectionId) & dataBase.checkPassword(msg.getUserName(), msg.getPassWord()))
-        {
-            dataBase.logInUser(msg.getUserName(), connectionId);
-            BlockingDeque<NotificationMessage> notifications = dataBase.getUpdated(msg.getUserName());
-            for (NotificationMessage message: notifications)
-            {
-                notifications.remove(message);
-                connections.send(connectionId, message);
+        ConcurrentHashMap<Integer, String> loginusers = dataBase.getLoggedInUsers();
+        synchronized (loginusers) {
+            if (!dataBase.checkIfLoggedIn(connectionId) && dataBase.checkPassword(msg.getUserName(), msg.getPassWord())) {
+                dataBase.logInUser(msg.getUserName(), connectionId);
+                ACKMessage response = new ACKMessage();
+                response.setOpcode((short) 2);
+                connections.send(connectionId, response);
+                BlockingDeque<NotificationMessage> notifications = dataBase.getUpdated(msg.getUserName());
+                for (NotificationMessage message : notifications) {
+                    notifications.remove(message);
+                    connections.send(connectionId, message);
+                }
+            } else {
+                ErrorMessage response = new ErrorMessage();
+                response.setOpcode((short)(2));
+                connections.send(connectionId, response);
             }
-        }
-        else
-        {
-            ErrorMessage response = new ErrorMessage();
-            response.setOpcode((short)(2));
-            connections.send(connectionId , response);
         }
     }
 
     public void processMessage(LogoutMessage msg)
     {
-        if(dataBase.checkIfLoggedIn(connectionId))
+        if(dataBase.checkIfLoggedIn(connectionId)) {
             dataBase.logout(connectionId);
+            ACKMessage response = new ACKMessage();
+            response.setOpcode((short)3);
+            connections.send(connectionId , response);
+        }
         else {
             ErrorMessage response = new ErrorMessage();
             response.setOpcode((short) (3));
@@ -133,7 +140,11 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
         else
         {
+
             dataBase.post(connectionId);
+            ACKMessage response = new ACKMessage();
+            response.setOpcode((short)5);
+            connections.send(connectionId , response);
             List<String> usernames = msg.getUsernames();
             BlockingDeque<String> followList = dataBase.returnFollowList(msg.getUsername());
             if(followList != null)
@@ -148,9 +159,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                     notification.setData((short)(1), dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
                     if(dataBase.checkIfLoggedIn(username))
                     {
-                        int connectionId = dataBase.getCID(username);
-                        if(connectionId != -1)
-                            connections.send(connectionId, notification);
+                        int newconnectionId = dataBase.getCID(username);
+                        if(newconnectionId != -1)
+                            connections.send(newconnectionId, notification);
                         else
                             dataBase.addToNotify(username, notification);
                     }
@@ -171,6 +182,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
         else
         {
+            ACKMessage response = new ACKMessage();
+            response.setOpcode((short)6);
+            connections.send(connectionId , response);
             NotificationMessage notification = new NotificationMessage();
             notification.setData((short)(0), dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
             if(!dataBase.checkIfLoggedIn(dataBase.getCID(msg.getUsername())))
@@ -188,6 +202,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
     public void processMessage(UserListMessage msg)
     {
+
         if (!dataBase.checkIfLoggedIn(connectionId))
         {
             ErrorMessage response = new ErrorMessage();
@@ -199,7 +214,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             ACKMessage response = new ACKMessage();
             response.setOpcode((short)(7));
             String userList ="";
-            Collection<String> usernames = dataBase.getUsernames();
+            Queue<String> usernames = dataBase.getUsernames();
             for(String user : usernames)
                 userList += user + "\0";
             response.setUserList((short)usernames.size(), userList);

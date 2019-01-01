@@ -1,11 +1,12 @@
 package bgu.spl.net.BGS;
 
+import com.sun.tools.sjavac.Log;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import sun.rmi.runtime.Log;
 
 import javax.management.Notification;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -13,6 +14,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class BGSDataBase {
 
     private ConcurrentHashMap<String, String> UserInfo;
+    private Queue<String> userList;
     private ConcurrentHashMap<Integer, String> LoggedInUsers;
     private ConcurrentHashMap<String, BlockingDeque<String>> FollowList;
     private ConcurrentHashMap<String, BlockingDeque<String>> UnFollowList;
@@ -26,6 +28,7 @@ public class BGSDataBase {
         UnFollowList = new ConcurrentHashMap<>();
         Notifications = new ConcurrentHashMap<>();
         usersStats = new ConcurrentHashMap<>();
+        userList = new LinkedList<>();
     }
 
     public boolean checkPassword(String userName, String password) {
@@ -46,6 +49,7 @@ public class BGSDataBase {
         for (String user : UserInfo.keySet())
             UnFollowList.get(userName).add(user);
         UserInfo.put(userName, password);
+        userList.add(userName);
     }
 
     public boolean checkIfAlreadyRegistered(String userName)
@@ -59,6 +63,8 @@ public class BGSDataBase {
     {
         return LoggedInUsers.containsKey(connectionId);
     }
+
+    public ConcurrentHashMap<Integer, String> getLoggedInUsers(){return LoggedInUsers;}
 
     public boolean checkIfLoggedIn(String userName)
     {
@@ -145,9 +151,9 @@ public class BGSDataBase {
         Notifications.get(username).addLast(message);
     }
 
-    public Collection<String> getUsernames()
+    public Queue<String> getUsernames()
     {
-        return UserInfo.keySet();
+        return userList;
     }
 
     public void post(int connectionId)

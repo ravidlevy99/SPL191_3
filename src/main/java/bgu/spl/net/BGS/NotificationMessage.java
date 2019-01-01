@@ -3,7 +3,7 @@ package bgu.spl.net.BGS;
 public class NotificationMessage extends MessageFromServer {
 
     private String username, content;
-    private short PMorPublic;
+    private short PMorPublic;// 0-PM 1-public message
 
     public NotificationMessage()
     {

@@ -5,6 +5,9 @@ import bgu.spl.net.api.MessagingProtocol;
 
 import java.sql.Connection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message> {
 
@@ -45,7 +48,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
     }
 
-    public void process(LoginMessage msg)
+    public void processMessage(LoginMessage msg)
     {
         if(!dataBase.checkIfLoggedIn(connectionId) & dataBase.checkPassword(msg.getUserName() , msg.getPassWord()))
         {
@@ -58,7 +61,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
     }
 
-    public void process(LogoutMessage msg)
+    public void processMessage(LogoutMessage msg)
     {
         if(dataBase.checkIfLoggedIn(connectionId))
             dataBase.logout(connectionId);
@@ -68,7 +71,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
     }
 
-    public void process(FollowMessage msg) {
+    public void processMessage(FollowMessage msg) {
 
         String username = dataBase.getUsernameByConnectionId(connectionId);
 
@@ -102,7 +105,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
     }
 
-    public void process(PostMessage msg)
+    public void processMessage(PostMessage msg)
     {
         if(!dataBase.checkIfLoggedIn(connectionId))
         {
@@ -111,7 +114,29 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
         else
         {
+            List<String> usernames = msg.getUsernames();
+            BlockingDeque<String> followList = dataBase.returnFollowList(msg.getUsername());
+            if(followList != null)
+                for (String username: followList)
+                    usernames.add(username);
 
+            for(String username: usernames)
+            {
+                if(dataBase.checkIfAlreadyRegistered(username))
+                {
+                    NotificationMessage notification = new NotificationMessage((short)(1), username, msg.getContent());
+                    if(dataBase.checkIfLoggedIn(username))
+                    {
+                        int connectionId = dataBase.getCID(username);
+                        if(connectionId != -1)
+                            connections.send(connectionId, notification);
+                        else
+                            dataBase.addToNotify(username, notification);
+                    }
+                    else
+                        dataBase.addToNotify(username, notification);
+                }
+            }
         }
     }
 }

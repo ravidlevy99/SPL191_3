@@ -10,12 +10,6 @@ public class ErrorMessage extends MessageFromServer {
         super();
         this.opcode = opcode;
     }
-
-    @Override
-    public Message decodeNextByte(byte b) {
-        return null;
-    }
-
     @Override
     public byte[] encode() {
         return new byte[0];

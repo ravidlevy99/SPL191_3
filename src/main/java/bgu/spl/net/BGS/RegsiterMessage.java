@@ -17,6 +17,7 @@ public class RegsiterMessage extends MessageFromClient {
         password = "";
     }
 
+    @Override
     public Message decodeNextByte(byte b)
     {
         if (currentByte >= bytes.length) {
@@ -44,11 +45,6 @@ public class RegsiterMessage extends MessageFromClient {
             return this;
 
         return null;
-    }
-
-    @Override
-    public byte[] encode() {
-        return new byte[0];
     }
 
     public String getUserName() {

@@ -1,5 +1,8 @@
 package bgu.spl.net.BGS;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import sun.rmi.runtime.Log;
+
 import java.util.LinkedList;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,6 +49,11 @@ public class BGSDataBase {
     public boolean checkIfLoggedIn(int connectionId)
     {
         return LoggedInUsers.containsKey(connectionId);
+    }
+
+    public boolean checkIfLoggedIn(String userName)
+    {
+        return LoggedInUsers.contains(userName);
     }
 
     public void logInUser(String userName, int connectionId)
@@ -98,5 +106,23 @@ public class BGSDataBase {
         return LoggedInUsers.get(connectionId);
     }
 
+    public BlockingDeque<String> returnFollowList(String username)
+    {
+        return FollowList.get(username);
+    }
 
+    public int getCID(String username)
+    {
+        for (int connectionId: LoggedInUsers.keySet()) {
+            if(LoggedInUsers.get(connectionId).equals(username))
+                return connectionId;
+        }
+        return -1;
+    }
+
+    public void addToNotify(String username, NotificationMessage message)
+    {
+        //TODO: Implement an addition of a notification to a data structure of a certain user a new hashmap
+        throw new NotImplementedException();
+    }
 }

@@ -2,17 +2,15 @@ package bgu.spl.net.BGS;
 
 public class NotificationMessage extends MessageFromServer {
 
-    private boolean PMorPublic;
-    private String postingUser, content;
+    private String username, content;
+    private short PMorPublic;
 
-    public NotificationMessage(String content)
+    public NotificationMessage(short PMorPublic, String username, String content)
     {
         super();
-    }
-
-    @Override
-    public Message decodeNextByte(byte b) {
-        return null;
+        this.PMorPublic = PMorPublic;
+        this.username = username;
+        this.content = content;
     }
 
     @Override

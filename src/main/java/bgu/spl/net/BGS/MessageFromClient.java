@@ -10,4 +10,7 @@ public abstract class MessageFromClient implements Message{
         bytes = new byte[1024];
         currentByte = 0;
     }
+
+    public abstract Message decodeNextByte(byte b);
+
 }

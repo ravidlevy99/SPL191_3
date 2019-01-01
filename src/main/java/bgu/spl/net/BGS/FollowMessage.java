@@ -18,6 +18,7 @@ public class FollowMessage extends MessageFromClient {
         usersleft = 0;
     }
 
+    @Override
     public Message decodeNextByte(byte b)
     {
         if (currentByte >= bytes.length) {
@@ -54,11 +55,6 @@ public class FollowMessage extends MessageFromClient {
             currentByte++;
         }
         return null;
-    }
-
-    @Override
-    public byte[] encode() {
-        return new byte[0];
     }
 
     public LinkedList<String> getUsernames()

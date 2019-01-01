@@ -8,4 +8,6 @@ public abstract class MessageFromServer implements Message{
     {
         bytes = new byte[1024];
     }
+
+    public abstract byte[] encode();
 }

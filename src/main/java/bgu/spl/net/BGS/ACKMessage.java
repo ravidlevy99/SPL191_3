@@ -21,12 +21,6 @@ public class ACKMessage extends MessageFromServer {
         this.numOfFollows = numOfFollows;
     }
 
-
-    @Override
-    public Message decodeNextByte(byte b) {
-        return null;
-    }
-
     @Override
     public byte[] encode() {
         return new byte[0];

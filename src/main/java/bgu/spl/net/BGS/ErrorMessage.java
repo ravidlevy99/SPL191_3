@@ -5,9 +5,13 @@ public class ErrorMessage extends MessageFromServer {
     private short opcode;
 
 
-    public ErrorMessage(short opcode)
+    public ErrorMessage()
     {
         super();
+    }
+
+    public void setOpcode(short opcode)
+    {
         this.opcode = opcode;
     }
     @Override

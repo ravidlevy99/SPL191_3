@@ -7,13 +7,12 @@ public class ACKMessage extends MessageFromServer {
     private short numOfFollowing, numOfFollowers, numOfPosts;
 
 
-    public ACKMessage(short opcode)
+    public ACKMessage()
     {
         super();
-        this.opcode = opcode;
     }
 
-    public void setUserList(short followOPCODE, short numOfUsers, String userList)
+    public void setFollowUserList(short followOPCODE, short numOfUsers, String userList)
     {
         this.followOPCODE = followOPCODE;
         this.optional = userList;
@@ -41,6 +40,11 @@ public class ACKMessage extends MessageFromServer {
         this.numOfFollowing = numOfFollowing;
         this.numOfFollowers = numOfFollowers;
         this.numOfPosts = numOfPosts;
+    }
+
+    public void setOpcode(short opcode)
+    {
+        this.opcode = opcode;
     }
 
     @Override

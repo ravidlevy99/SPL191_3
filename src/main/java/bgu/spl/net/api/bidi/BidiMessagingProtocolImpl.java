@@ -2,11 +2,11 @@ package bgu.spl.net.api.bidi;
 
 import bgu.spl.net.BGS.*;
 
-import javax.management.Notification;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message> {
 
@@ -14,6 +14,11 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     private BGSDataBase dataBase;
     private Connections<Message> connections;
     private int connectionId;
+
+    public BidiMessagingProtocolImpl(BGSDataBase dataBase)
+    {
+        this.dataBase = dataBase;
+    }
 
     @Override
     public void start(int connectionId, Connections<Message> connections) {
@@ -31,20 +36,21 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         return shouldTerminate;
     }
 
-    public void setDataBase(BGSDataBase dataBase)
-    {
-        this.dataBase = dataBase;
-    }
 
     public void processMessage(RegisterMessage msg)
     {
-        if (dataBase.checkIfAlreadyRegistered(msg.getUserName())) {
-            ErrorMessage response = new ErrorMessage((short) (1));
-            connections.send(connectionId, response);
-        } else {
-            dataBase.registerUser(msg.getUserName(), msg.getPassWord());
-            ACKMessage response = new ACKMessage((short) (1));
-            connections.send(connectionId, response);
+        ConcurrentHashMap<String, String> UserInfo  = dataBase.getUserInfo();
+        synchronized (UserInfo) {
+            if (dataBase.checkIfAlreadyRegistered(msg.getUserName())) {
+                ErrorMessage response = new ErrorMessage();
+                response.setOpcode((short) (1));
+                connections.send(connectionId, response);
+            } else {
+                dataBase.registerUser(msg.getUserName(), msg.getPassWord());
+                ACKMessage response = new ACKMessage();
+                response.setOpcode((short) (1));
+                connections.send(connectionId, response);
+            }
         }
     }
 
@@ -62,7 +68,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
         else
         {
-            ErrorMessage response = new ErrorMessage((short)(2));
+            ErrorMessage response = new ErrorMessage();
+            response.setOpcode((short)(2));
             connections.send(connectionId , response);
         }
     }
@@ -72,7 +79,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         if(dataBase.checkIfLoggedIn(connectionId))
             dataBase.logout(connectionId);
         else {
-            ErrorMessage response = new ErrorMessage((short) (3));
+            ErrorMessage response = new ErrorMessage();
+            response.setOpcode((short) (3));
             connections.send(connectionId, response);
         }
     }
@@ -84,7 +92,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
         if(!dataBase.checkIfLoggedIn(connectionId))
         {
-            ErrorMessage response = new ErrorMessage((short) (4));
+            ErrorMessage response = new ErrorMessage();
+            response.setOpcode((short) (4));
             connections.send(connectionId, response);
         }
 
@@ -96,7 +105,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                 list = dataBase.unFollow(username, msg.getUsernames());
 
             if (list.isEmpty()) {
-                ErrorMessage response = new ErrorMessage((short) (4));
+                ErrorMessage response = new ErrorMessage();
+                response.setOpcode((short) (4));
                 connections.send(connectionId, response);
             }
             else
@@ -105,8 +115,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                 String userList = "";
                 for(String user : list)
                     userList += user + "\0";
-                ACKMessage response = new ACKMessage((short)(4));
-                response.setUserList(msg.followOrUnfollow(), numOfUsers, userList);
+                ACKMessage response = new ACKMessage();
+                response.setOpcode((short)(4));
+                response.setFollowUserList(msg.followOrUnfollow(), numOfUsers, userList);
                 connections.send(connectionId , response);
             }
         }
@@ -116,7 +127,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     {
         if(!dataBase.checkIfLoggedIn(connectionId))
         {
-            ErrorMessage response = new ErrorMessage((short) (5));
+            ErrorMessage response = new ErrorMessage();
+            response.setOpcode((short) (5));
             connections.send(connectionId, response);
         }
         else
@@ -132,7 +144,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             {
                 if(dataBase.checkIfAlreadyRegistered(username))
                 {
-                    NotificationMessage notification = new NotificationMessage((short)(1), dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
+                    NotificationMessage notification = new NotificationMessage();
+                    notification.setData((short)(1), dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
                     if(dataBase.checkIfLoggedIn(username))
                     {
                         int connectionId = dataBase.getCID(username);
@@ -152,12 +165,14 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     {
         if (!dataBase.checkIfLoggedIn(connectionId) | !dataBase.checkIfAlreadyRegistered(msg.getUsername()))
         {
-            ErrorMessage response = new ErrorMessage((short) (6));
+            ErrorMessage response = new ErrorMessage();
+            response.setOpcode((short) (6));
             connections.send(connectionId, response);
         }
         else
         {
-            NotificationMessage notification = new NotificationMessage((short)(0), dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
+            NotificationMessage notification = new NotificationMessage();
+            notification.setData((short)(0), dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
             if(!dataBase.checkIfLoggedIn(dataBase.getCID(msg.getUsername())))
                 dataBase.addToNotify(msg.getUsername(), notification);
             else
@@ -175,12 +190,14 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     {
         if (!dataBase.checkIfLoggedIn(connectionId))
         {
-            ErrorMessage response = new ErrorMessage((short) (7));
+            ErrorMessage response = new ErrorMessage();
+            response.setOpcode((short) (7));
             connections.send(connectionId, response);
         }
         else
         {
-            ACKMessage response = new ACKMessage((short)(7));
+            ACKMessage response = new ACKMessage();
+            response.setOpcode((short)(7));
             String userList ="";
             Collection<String> usernames = dataBase.getUsernames();
             for(String user : usernames)
@@ -194,13 +211,15 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     {
         if (!dataBase.checkIfLoggedIn(connectionId) | !dataBase.checkIfAlreadyRegistered(msg.getUsername()))
         {
-            ErrorMessage response = new ErrorMessage((short) (8));
+            ErrorMessage response = new ErrorMessage();
+            response.setOpcode((short) (8));
             connections.send(connectionId, response);
         }
         else
         {
             Stats stats = dataBase.getStats(msg.getUsername());
-            ACKMessage response = new ACKMessage((short)(8));
+            ACKMessage response = new ACKMessage();
+            response.setOpcode((short)(8));
             response.setStats(stats.getNumOfFollowing(), stats.getNumOfFollowers(), stats.getNumOfPosts());
             connections.send(connectionId, response);
         }

@@ -41,11 +41,11 @@ public class BidiMessageEncoderDecoder implements MessageEncoderDecoder<Message>
 
     public MessageFromServer getFromServer() {
         if (opcode == 9)
-            return new NotificationMessage("");
+            return new NotificationMessage();
         else if (opcode == 10)
-            return new ACKMessage((opcode));
+            return new ACKMessage();
         else if (opcode == 11)
-            return new ErrorMessage(opcode);
+            return new ErrorMessage();
         else
             return null;
     }
@@ -68,12 +68,12 @@ public class BidiMessageEncoderDecoder implements MessageEncoderDecoder<Message>
             len = 0;
             opcode = 0;
         }
-        return message.decodeNextByte(nextByte);
+        return ((MessageFromClient)message).decodeNextByte(nextByte);
     }
 
     @Override
     public byte[] encode(Message message)
     {
-        return message.encode();
+        return ((MessageFromServer)message).encode();
     }
 }

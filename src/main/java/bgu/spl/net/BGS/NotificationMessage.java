@@ -5,16 +5,20 @@ public class NotificationMessage extends MessageFromServer {
     private String username, content;
     private short PMorPublic;
 
-    public NotificationMessage(short PMorPublic, String username, String content)
+    public NotificationMessage()
     {
         super();
-        this.PMorPublic = PMorPublic;
-        this.username = username;
-        this.content = content;
     }
 
     @Override
     public byte[] encode() {
         return new byte[0];
+    }
+
+    public void setData(short PMorPublic , String username , String content)
+    {
+        this.PMorPublic = PMorPublic;
+        this.username = username;
+        this.content = content;
     }
 }

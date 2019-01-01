@@ -50,8 +50,10 @@ public class BGSDataBase {
 
     public boolean checkIfAlreadyRegistered(String userName)
     {
-        return UserInfo.containsKey(userName);
+            return UserInfo.containsKey(userName);
     }
+
+    public ConcurrentHashMap<String, String> getUserInfo(){return UserInfo;}
 
     public boolean checkIfLoggedIn(int connectionId)
     {

@@ -16,6 +16,15 @@ public class ErrorMessage extends MessageFromServer {
     }
     @Override
     public byte[] encode() {
-        return new byte[0];
+        byte[] bytesArr = new byte[2];
+        bytesArr[0] = (byte)((11 >> 8) & 0xFF);
+        bytesArr[1] = (byte)(11 & 0xFF);
+
+        byte[] bytes = new byte[2];
+        bytes[0] = (byte)((opcode >> 8)& 0xFF);
+        bytes[1] = (byte)(opcode & 0xFF);
+
+        byte[] output ={bytesArr[0] , bytesArr[1] , bytes[0] , bytes[1]};
+        return output;
     }
 }

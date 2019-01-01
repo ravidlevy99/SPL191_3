@@ -121,7 +121,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                 short numOfUsers = (short)(list.size());
                 String userList = "";
                 for(String user : list)
-                    userList += user + "\0";
+                    userList += user + '\0';
                 ACKMessage response = new ACKMessage();
                 response.setOpcode((short)(4));
                 response.setFollowUserList(msg.followOrUnfollow(), numOfUsers, userList);
@@ -156,7 +156,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                 if(dataBase.checkIfAlreadyRegistered(username))
                 {
                     NotificationMessage notification = new NotificationMessage();
-                    notification.setData((short)(1), dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
+                    notification.setData("1", dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
                     if(dataBase.checkIfLoggedIn(username))
                     {
                         int newconnectionId = dataBase.getCID(username);
@@ -186,7 +186,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             response.setOpcode((short)6);
             connections.send(connectionId , response);
             NotificationMessage notification = new NotificationMessage();
-            notification.setData((short)(0), dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
+            notification.setData("0", dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
             if(!dataBase.checkIfLoggedIn(dataBase.getCID(msg.getUsername())))
                 dataBase.addToNotify(msg.getUsername(), notification);
             else
@@ -216,7 +216,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             String userList ="";
             Queue<String> usernames = dataBase.getUsernames();
             for(String user : usernames)
-                userList += user + "\0";
+                userList += user + '\0';
             response.setUserList((short)usernames.size(), userList);
             connections.send(connectionId , response);
         }

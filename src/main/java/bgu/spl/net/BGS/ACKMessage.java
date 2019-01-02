@@ -125,7 +125,5 @@ public class ACKMessage extends MessageFromServer {
 
         byte[] output ={bytesArr[0] , bytesArr[1] , byteOpCode[0] , byteOpCode[1]};
         return output;
-
-
     }
 }

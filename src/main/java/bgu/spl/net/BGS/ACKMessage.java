@@ -2,7 +2,7 @@ package bgu.spl.net.BGS;
 
 public class ACKMessage extends MessageFromServer {
 
-    private short opcode, numOfUsers, followOPCODE;
+    private short opcode, numOfUsers;
     private String optional;
     private short numOfFollowing, numOfFollowers, numOfPosts;
 
@@ -12,9 +12,8 @@ public class ACKMessage extends MessageFromServer {
         super();
     }
 
-    public void setFollowUserList(short followOPCODE, short numOfUsers, String userList)
+    public void setFollowUserList( short numOfUsers, String userList)
     {
-        this.followOPCODE = followOPCODE;
         this.optional = userList;
         this.numOfUsers = numOfUsers;
         numOfFollowing = -1;
@@ -24,7 +23,6 @@ public class ACKMessage extends MessageFromServer {
 
     public void setUserList(short numOfUsers, String userList)
     {
-        followOPCODE = -1;
         this.numOfUsers = numOfUsers;
         this.optional = userList;
         numOfFollowing = -1;
@@ -34,7 +32,6 @@ public class ACKMessage extends MessageFromServer {
 
     public void setStats(short numOfFollowing, short numOfFollowers, short numOfPosts)
     {
-        followOPCODE = -1;
         optional = "";
         numOfUsers = -1;
         this.numOfFollowing = numOfFollowing;

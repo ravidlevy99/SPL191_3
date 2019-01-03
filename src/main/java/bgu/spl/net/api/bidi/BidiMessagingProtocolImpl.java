@@ -2,10 +2,7 @@ package bgu.spl.net.api.bidi;
 
 import bgu.spl.net.BGS.*;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -105,8 +102,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
         }
 
         else {
-            LinkedList<String> list;
-            if (msg.followOrUnfollow() == 0)
+            Vector<String> list;
+            if (msg.followOrUnfollow() == '0')
                 list = dataBase.follow(username, msg.getUsernames());
             else
                 list = dataBase.unFollow(username, msg.getUsernames());
@@ -124,7 +121,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                     userList += user + '\0';
                 ACKMessage response = new ACKMessage();
                 response.setOpcode((short)(4));
-                response.setFollowUserList(msg.followOrUnfollow(), numOfUsers, userList);
+                response.setFollowUserList(numOfUsers, userList);
                 connections.send(connectionId , response);
             }
         }

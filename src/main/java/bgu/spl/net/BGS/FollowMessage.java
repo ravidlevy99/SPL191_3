@@ -10,8 +10,9 @@ import java.util.Vector;
 
 public class FollowMessage extends MessageFromClient {
 
-    private short followOrUnfollow, numberOfUsers, usersleft;
-    private String[] usernames;
+    private short numberOfUsers, usersleft;
+    private char followOrUnfollow = '\0';
+    private Vector<String> usernames;
     private boolean passedTwo = false;
     private boolean isDone;
 
@@ -21,6 +22,7 @@ public class FollowMessage extends MessageFromClient {
         numberOfUsers = 0;
         usersleft = 0;
         isDone = false;
+        usernames = new Vector<>();
     }
 
     @Override
@@ -30,36 +32,45 @@ public class FollowMessage extends MessageFromClient {
             bytes = Arrays.copyOf(bytes, currentByte * 2);
         }
 
-        if(b == '\0')
-        {
-            usernames[numberOfUsers - usersleft] = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
-            currentByte = 0;
-            usersleft--;
-            currentByte = 0;
-            if(usersleft == 0) {
-                isDone = true;
-                return this;
-            }
+        if(followOrUnfollow == '\0') {
+            followOrUnfollow = (char)b;
         }
-
-        else {
-            if (!passedTwo)
+        else
+        {
+            if(!passedTwo)
             {
-                if (currentByte == 0)
-                    followOrUnfollow = (short) b;
-                else if (currentByte == 1 | currentByte == 2) {
-                    if (currentByte == 1)
-                        numberOfUsers += (short) (b & 0xff << 8);
-                    else {
+                if(currentByte == 0) {
+                    numberOfUsers += (short) (b & 0xff << 8);
+                    currentByte++;
+                }
+                else
+                    if(currentByte == 1) {
                         numberOfUsers += (short) (b & 0xff);
                         usersleft = numberOfUsers;
-                        usernames = new String[numberOfUsers];
                         passedTwo = true;
+                        currentByte = 0;
+                      }
+            }
+            else
+            {
+                if(b == '\0')
+                {
+                    String userName = new String(bytes , 0 , currentByte , StandardCharsets.UTF_8);
+                    usernames.add(userName);
+                    currentByte = 0;
+                    usersleft--;
+                    if(usersleft == 0) {
+                        isDone = true;
+                        return this;
                     }
+
+                }
+                else
+                {
+                    bytes[currentByte] = b;
+                    currentByte++;
                 }
             }
-            bytes[currentByte] = b;
-            currentByte++;
         }
         return null;
     }
@@ -69,18 +80,12 @@ public class FollowMessage extends MessageFromClient {
         messagingProtocol.processMessage(this);
     }
 
-    public LinkedList<String> getUsernames()
+    public Vector<String> getUsernames()
     {
-        LinkedList list = new LinkedList();
-
-        for (int i = 0; i < usernames.length; i++) {
-            list.add(usernames[i]);
-        }
-
-        return list;
+        return usernames;
     }
 
-    public short followOrUnfollow()
+    public char followOrUnfollow()
     {
         return followOrUnfollow;
     }
@@ -90,3 +95,37 @@ public class FollowMessage extends MessageFromClient {
         return isDone;
     }
 }
+
+//        if(b == '\0')
+//        {
+//            String userName = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
+//            currentByte = 0;
+//            usersleft--;
+//            currentByte = 0;
+//            if(usersleft == 0) {
+//                isDone = true;
+//                return this;
+//            }
+//        }
+//
+//        else {
+//            if (!passedTwo)
+//            {
+//                if (currentByte == 0)
+//                    followOrUnfollow = (short) b;
+//                else if (currentByte == 1 | currentByte == 2) {
+//                    if (currentByte == 1)
+//                        numberOfUsers += (short) (b & 0xff << 8);
+//                    else {
+//                        numberOfUsers += (short) (b & 0xff);
+//                        usersleft = numberOfUsers;
+//                        usernames = new String[numberOfUsers];
+//                        passedTwo = true;
+//                    }
+//                }
+//            }
+//            bytes[currentByte] = b;
+//            currentByte++;
+//        }
+//        return null;
+

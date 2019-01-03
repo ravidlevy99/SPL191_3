@@ -2,6 +2,7 @@ package bgu.spl.net.BGS;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Vector;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -77,8 +78,8 @@ public class BGSDataBase {
         LoggedInUsers.put(connectionId, userName);
     }
 
-    public LinkedList<String> follow(String userName, LinkedList<String> followList) {
-        LinkedList<String> output = new LinkedList<>();
+    public Vector<String> follow(String userName, Vector<String> followList) {
+        Vector<String> output = new Vector<>();
         BlockingDeque<String> currentFollowList = FollowList.get(userName);
         BlockingDeque<String> currentUnFollowList = UnFollowList.get(userName);
 
@@ -96,9 +97,9 @@ public class BGSDataBase {
         return output;
     }
 
-    public LinkedList<String> unFollow(String userName , LinkedList<String> unFollowList)
+    public Vector<String> unFollow(String userName , Vector<String> unFollowList)
     {
-        LinkedList<String> output = new LinkedList<>();
+        Vector<String> output = new Vector<>();
         BlockingDeque<String> currentFollowList = FollowList.get(userName);
         BlockingDeque<String> currentUnFollowList = UnFollowList.get(userName);
 

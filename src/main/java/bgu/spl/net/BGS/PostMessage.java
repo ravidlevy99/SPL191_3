@@ -11,6 +11,7 @@ public class PostMessage extends MessageFromClient {
 
     private String content, username;
     private List<String> usernames;
+    private boolean isDone;
 
     public PostMessage()
     {
@@ -18,6 +19,7 @@ public class PostMessage extends MessageFromClient {
         content = "";
         username = null;
         usernames = new LinkedList<>();
+        isDone = false;
     }
 
 
@@ -35,6 +37,7 @@ public class PostMessage extends MessageFromClient {
                 username = null;
             }
             content = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
+            isDone = true;
             return this;
         }
 
@@ -73,5 +76,10 @@ public class PostMessage extends MessageFromClient {
     @Override
     public void process(BidiMessagingProtocolImpl messagingProtocol) {
         messagingProtocol.processMessage(this);
+    }
+
+    @Override
+    public boolean isDone() {
+        return isDone;
     }
 }

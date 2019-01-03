@@ -42,7 +42,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     {
         ConcurrentHashMap<String, String> UserInfo  = dataBase.getUserInfo();
         synchronized (UserInfo){
-            if (dataBase.checkIfAlreadyRegistered(msg.getUserName()) || dataBase.checkIfLoggedIn(connectionId)) {
+            if (dataBase.checkIfAlreadyRegistered(msg.getUserName()) || dataBase.checkIfLoggedIn(connectionId, msg.getUserName())) {
                 ErrorMessage response = new ErrorMessage();
                 response.setOpcode((short) (1));
                 connections.send(connectionId, response);
@@ -59,7 +59,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
     {
         ConcurrentHashMap<Integer, String> loginusers = dataBase.getLoggedInUsers();
         synchronized (loginusers) {
-            if (!dataBase.checkIfLoggedIn(connectionId) && dataBase.checkPassword(msg.getUserName(), msg.getPassWord())) {
+            if (!dataBase.checkIfLoggedIn(connectionId , msg.getUserName()) && dataBase.checkPassword(msg.getUserName(), msg.getPassWord())) {
                 dataBase.logInUser(msg.getUserName(), connectionId);
                 ACKMessage response = new ACKMessage();
                 response.setOpcode((short) 2);
@@ -156,7 +156,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
                 if(dataBase.checkIfAlreadyRegistered(username))
                 {
                     NotificationMessage notification = new NotificationMessage();
-                    notification.setData("1", dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
+                    notification.setData("0", dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
                     if(dataBase.checkIfLoggedIn(username))
                     {
                         int newconnectionId = dataBase.getCID(username);
@@ -186,7 +186,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             response.setOpcode((short)6);
             connections.send(connectionId , response);
             NotificationMessage notification = new NotificationMessage();
-            notification.setData("0", dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
+            notification.setData("1", dataBase.getUsernameByConnectionId(connectionId), msg.getContent());
             if(!dataBase.checkIfLoggedIn(dataBase.getCID(msg.getUsername())))
                 dataBase.addToNotify(msg.getUsername(), notification);
             else

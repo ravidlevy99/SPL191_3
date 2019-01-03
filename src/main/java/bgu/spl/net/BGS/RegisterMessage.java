@@ -10,6 +10,7 @@ public class RegisterMessage extends MessageFromClient {
     private int zeroCounter;
     private String username, password;
     private short opcode = 1;
+    private boolean isDone;
 
     public RegisterMessage()
     {
@@ -17,6 +18,7 @@ public class RegisterMessage extends MessageFromClient {
         zeroCounter = 0;
         username = "";
         password = "";
+        isDone = false;
     }
 
     @Override
@@ -43,8 +45,10 @@ public class RegisterMessage extends MessageFromClient {
             currentByte++;
         }
 
-        if(zeroCounter == 2)
+        if(zeroCounter == 2) {
+            isDone  =true;
             return this;
+        }
 
         return null;
     }
@@ -60,5 +64,11 @@ public class RegisterMessage extends MessageFromClient {
     @Override
     public void process(BidiMessagingProtocolImpl messagingProtocol) {
         messagingProtocol.processMessage(this);
+    }
+
+    @Override
+    public boolean isDone()
+    {
+        return isDone;
     }
 }

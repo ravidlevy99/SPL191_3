@@ -9,6 +9,7 @@ public class PrivateMessage extends MessageFromClient {
 
     private String username, content;
     private int zeroCounter;
+    private boolean isDone;
 
     public PrivateMessage()
     {
@@ -16,6 +17,7 @@ public class PrivateMessage extends MessageFromClient {
         username = "";
         content = "";
         zeroCounter = 0;
+        isDone = false;
     }
 
     @Override
@@ -41,8 +43,10 @@ public class PrivateMessage extends MessageFromClient {
             currentByte++;
         }
 
-        if(zeroCounter == 2)
+        if(zeroCounter == 2) {
+            isDone = true;
             return this;
+        }
 
         return null;
     }
@@ -60,5 +64,10 @@ public class PrivateMessage extends MessageFromClient {
     public String getContent()
     {
         return content;
+    }
+
+    @Override
+    public boolean isDone() {
+        return isDone;
     }
 }

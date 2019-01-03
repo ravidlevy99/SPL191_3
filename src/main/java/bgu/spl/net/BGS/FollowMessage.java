@@ -13,12 +13,14 @@ public class FollowMessage extends MessageFromClient {
     private short followOrUnfollow, numberOfUsers, usersleft;
     private String[] usernames;
     private boolean passedTwo = false;
+    private boolean isDone;
 
     public FollowMessage()
     {
         super();
         numberOfUsers = 0;
         usersleft = 0;
+        isDone = false;
     }
 
     @Override
@@ -34,8 +36,10 @@ public class FollowMessage extends MessageFromClient {
             currentByte = 0;
             usersleft--;
             currentByte = 0;
-            if(usersleft == 0)
+            if(usersleft == 0) {
+                isDone = true;
                 return this;
+            }
         }
 
         else {
@@ -79,5 +83,10 @@ public class FollowMessage extends MessageFromClient {
     public short followOrUnfollow()
     {
         return followOrUnfollow;
+    }
+
+    @Override
+    public boolean isDone() {
+        return isDone;
     }
 }

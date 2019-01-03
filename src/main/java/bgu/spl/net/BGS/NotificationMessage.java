@@ -44,4 +44,8 @@ public class NotificationMessage extends MessageFromServer {
 
     }
 
+    @Override
+    public boolean isDone() {
+        return true;
+    }
 }

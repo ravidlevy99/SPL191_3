@@ -1,10 +1,5 @@
 package bgu.spl.net.BGS;
 
-import com.sun.tools.sjavac.Log;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import javax.management.Notification;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.BlockingDeque;
@@ -62,6 +57,12 @@ public class BGSDataBase {
     public boolean checkIfLoggedIn(int connectionId)
     {
         return LoggedInUsers.containsKey(connectionId);
+    }
+
+    public boolean checkIfLoggedIn(int connectionId , String userName)
+    {
+        boolean output = (LoggedInUsers.containsKey(connectionId)) || (LoggedInUsers.contains(userName));
+        return output;
     }
 
     public ConcurrentHashMap<Integer, String> getLoggedInUsers(){return LoggedInUsers;}

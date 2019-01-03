@@ -3,10 +3,12 @@ package bgu.spl.net.BGS;
 import bgu.spl.net.api.bidi.BidiMessagingProtocolImpl;
 
 public class UserListMessage extends MessageFromClient {
+        private boolean isDone;
 
     public UserListMessage()
     {
         super();
+        isDone = true;
     }
 
 
@@ -18,5 +20,10 @@ public class UserListMessage extends MessageFromClient {
     @Override
     public void process(BidiMessagingProtocolImpl messagingProtocol) {
         messagingProtocol.processMessage(this);
+    }
+
+    @Override
+    public boolean isDone() {
+        return isDone;
     }
 }

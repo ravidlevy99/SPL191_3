@@ -27,4 +27,9 @@ public class ErrorMessage extends MessageFromServer {
         byte[] output ={bytesArr[0] , bytesArr[1] , bytes[0] , bytes[1]};
         return output;
     }
+
+    @Override
+    public boolean isDone() {
+        return true;
+    }
 }

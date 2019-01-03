@@ -9,6 +9,7 @@ public class LoginMessage extends MessageFromClient {
 
     private String username, password;
     private int zeroCounter;
+    private boolean isDone;
 
     public LoginMessage()
     {
@@ -16,6 +17,7 @@ public class LoginMessage extends MessageFromClient {
         zeroCounter = 0;
         username = "";
         password = "";
+        isDone = false;
     }
 
     @Override
@@ -38,8 +40,10 @@ public class LoginMessage extends MessageFromClient {
             currentByte++;
         }
 
-        if(zeroCounter == 2)
+        if(zeroCounter == 2) {
+            isDone = true;
             return this;
+        }
 
         return null;
     }
@@ -61,5 +65,10 @@ public class LoginMessage extends MessageFromClient {
     }
     public String getPassWord(){
         return password;
+    }
+
+    @Override
+    public boolean isDone() {
+        return isDone;
     }
 }

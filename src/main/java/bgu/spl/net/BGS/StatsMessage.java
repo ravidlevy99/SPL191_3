@@ -8,11 +8,13 @@ import java.util.Arrays;
 public class StatsMessage extends MessageFromClient {
 
     private String username;
+    private boolean isDone;
 
     public StatsMessage()
     {
         super();
         username = "";
+        isDone = false;
     }
 
     @Override
@@ -23,6 +25,7 @@ public class StatsMessage extends MessageFromClient {
         if(b == '\0')
         {
             username = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
+            isDone = true;
             return this;
         }
         bytes[currentByte] = b;
@@ -38,5 +41,10 @@ public class StatsMessage extends MessageFromClient {
     public String getUsername()
     {
         return username;
+    }
+
+    @Override
+    public boolean isDone() {
+        return isDone;
     }
 }

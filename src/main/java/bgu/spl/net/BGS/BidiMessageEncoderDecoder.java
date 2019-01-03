@@ -8,6 +8,7 @@ public class BidiMessageEncoderDecoder implements MessageEncoderDecoder<Message>
     private Message message;
     private short opcode = 0;
     private int len = 0;
+    private boolean alreadyDecoding = false;
 
     public Message get() {
         if (opcode < 9)
@@ -29,7 +30,7 @@ public class BidiMessageEncoderDecoder implements MessageEncoderDecoder<Message>
             return new FollowMessage();
         else if (opcode == 5)
             return new PostMessage();
-        else if (opcode == 6) //Sliding into her DMs
+        else if (opcode == 6)
             return new PrivateMessage();
         else if (opcode == 7)
             return new UserListMessage();
@@ -52,23 +53,40 @@ public class BidiMessageEncoderDecoder implements MessageEncoderDecoder<Message>
 
     @Override
     public Message decodeNextByte(byte nextByte) {
-
-        if(len < 2)
-        {
-            if(len == 0)
+        if (len < 2) {
+            if (len == 0)
                 opcode += (short) (nextByte & 0xff << 8);
-            else
+            else {
                 opcode += (short) (nextByte & 0xff);
+                if (opcode == 3 | opcode == 7){
+                    message = get();
+                    len = 0;
+                    opcode = 0;
+                    System.out.println(message.getClass());
+                    return message;
+                }
+            }
             len++;
             return null;
         }
-        if (len == 2)
-        {
-            message = get();
-            len = 0;
-            opcode = 0;
+        if (len == 2) {
+            if(!alreadyDecoding){
+                message = get();
+                alreadyDecoding = true;
+            }
+            if (!message.isDone()) {
+                Message output = ((MessageFromClient) message).decodeNextByte(nextByte);
+                if(output != null)
+                {
+                    len = 0;
+                    opcode = 0;
+                    alreadyDecoding = false;
+                    System.out.println(output.getClass());
+                }
+                return output;
+            }
         }
-        return ((MessageFromClient)message).decodeNextByte(nextByte);
+        return null;
     }
 
     @Override

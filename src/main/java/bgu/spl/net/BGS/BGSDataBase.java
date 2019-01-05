@@ -16,6 +16,7 @@ public class BGSDataBase {
     private ConcurrentHashMap<String, BlockingDeque<String>> UnFollowList;
     private ConcurrentHashMap<String, BlockingDeque<NotificationMessage>> Notifications;
     private ConcurrentHashMap<String, Stats> usersStats;
+    private ConcurrentHashMap<String , BlockingDeque<String>> WhoFollowMe;
 
     public BGSDataBase() {
         UserInfo = new ConcurrentHashMap<>();
@@ -25,6 +26,7 @@ public class BGSDataBase {
         Notifications = new ConcurrentHashMap<>();
         usersStats = new ConcurrentHashMap<>();
         userList = new LinkedList<>();
+        WhoFollowMe = new ConcurrentHashMap<>();
     }
 
     public boolean checkPassword(String userName, String password) {
@@ -40,6 +42,7 @@ public class BGSDataBase {
         FollowList.put(userName, new LinkedBlockingDeque<>());
         UnFollowList.put(userName, new LinkedBlockingDeque<>());
         Notifications.put(userName, new LinkedBlockingDeque<>());
+        WhoFollowMe.put(userName , new LinkedBlockingDeque<>());
         usersStats.put(userName, new Stats());
 
         for (String user : UserInfo.keySet())
@@ -86,6 +89,7 @@ public class BGSDataBase {
         for (String name : followList) {
             if (UserInfo.containsKey(name)) {
                 if (currentUnFollowList.contains(name)) {
+                    WhoFollowMe.get(name).add(userName);
                     currentUnFollowList.remove(name);
                     currentFollowList.add(name);
                     usersStats.get(userName).follow();
@@ -106,6 +110,7 @@ public class BGSDataBase {
         for(String name : unFollowList){
             if(UserInfo.containsKey(name)){
                 if(currentFollowList.contains(name)){
+                    WhoFollowMe.get(name).remove(userName);
                     currentFollowList.remove(name);
                     currentUnFollowList.add(name);
                     usersStats.get(userName).unfollow();
@@ -134,7 +139,7 @@ public class BGSDataBase {
 
     public BlockingDeque<String> returnFollowList(String username)
     {
-        return FollowList.get(username);
+        return WhoFollowMe.get(username);
     }
 
     public int getCID(String username)

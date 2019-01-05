@@ -142,11 +142,12 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             ACKMessage response = new ACKMessage();
             response.setOpcode((short)5);
             connections.send(connectionId , response);
-            List<String> usernames = msg.getUsernames();
+            Vector<String> usernames = msg.getUsernames();
             BlockingDeque<String> followList = dataBase.returnFollowList(dataBase.getUsernameByConnectionId(connectionId));
             if(followList != null)
                 for (String username: followList)
-                    usernames.add(username);
+                    if(!usernames.contains(username))
+                        usernames.add(username);
 
             for(String username: usernames)
             {
@@ -171,7 +172,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
 
     public void processMessage(PrivateMessage msg)
     {
-        if (!dataBase.checkIfLoggedIn(connectionId) | !dataBase.checkIfAlreadyRegistered(msg.getUsername()))
+        if (!dataBase.checkIfLoggedIn(connectionId) | !dataBase.checkIfAlreadyRegistered(msg.getUsername()) | msg.getUsername().equals(dataBase.getUsernameByConnectionId(connectionId)))
         {
             ErrorMessage response = new ErrorMessage();
             response.setOpcode((short) (6));

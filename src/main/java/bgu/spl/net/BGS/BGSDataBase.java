@@ -89,12 +89,14 @@ public class BGSDataBase {
         for (String name : followList) {
             if (UserInfo.containsKey(name)) {
                 if (currentUnFollowList.contains(name)) {
-                    WhoFollowMe.get(name).add(userName);
-                    currentUnFollowList.remove(name);
-                    currentFollowList.add(name);
-                    usersStats.get(userName).follow();
-                    usersStats.get(name).followed();
-                    output.add(name);
+                    synchronized (usersStats) {
+                        WhoFollowMe.get(name).add(userName);
+                        currentUnFollowList.remove(name);
+                        currentFollowList.add(name);
+                        usersStats.get(userName).follow();
+                        usersStats.get(name).followed();
+                        output.add(name);
+                    }
                 }
             }
         }
@@ -110,12 +112,14 @@ public class BGSDataBase {
         for(String name : unFollowList){
             if(UserInfo.containsKey(name)){
                 if(currentFollowList.contains(name)){
-                    WhoFollowMe.get(name).remove(userName);
-                    currentFollowList.remove(name);
-                    currentUnFollowList.add(name);
-                    usersStats.get(userName).unfollow();
-                    usersStats.get(name).unfollowed();
-                    output.add(name);
+                    synchronized (usersStats) {
+                        WhoFollowMe.get(name).remove(userName);
+                        currentFollowList.remove(name);
+                        currentUnFollowList.add(name);
+                        usersStats.get(userName).unfollow();
+                        usersStats.get(name).unfollowed();
+                        output.add(name);
+                    }
                 }
             }
         }
@@ -165,7 +169,9 @@ public class BGSDataBase {
 
     public void post(int connectionId)
     {
-        usersStats.get(LoggedInUsers.get(connectionId)).post();
+        synchronized (usersStats) {
+            usersStats.get(LoggedInUsers.get(connectionId)).post();
+        }
     }
 
     public Stats getStats(String username)

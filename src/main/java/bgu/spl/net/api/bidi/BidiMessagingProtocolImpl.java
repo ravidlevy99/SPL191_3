@@ -143,7 +143,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<Message>
             response.setOpcode((short)5);
             connections.send(connectionId , response);
             List<String> usernames = msg.getUsernames();
-            BlockingDeque<String> followList = dataBase.returnFollowList(msg.getUsername());
+            BlockingDeque<String> followList = dataBase.returnFollowList(dataBase.getUsernameByConnectionId(connectionId));
             if(followList != null)
                 for (String username: followList)
                     usernames.add(username);

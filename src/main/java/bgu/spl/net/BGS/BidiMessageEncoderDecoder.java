@@ -62,7 +62,6 @@ public class BidiMessageEncoderDecoder implements MessageEncoderDecoder<Message>
                     message = get();
                     len = 0;
                     opcode = 0;
-                    System.out.println(message.getClass());
                     return message;
                 }
             }
@@ -81,7 +80,6 @@ public class BidiMessageEncoderDecoder implements MessageEncoderDecoder<Message>
                     len = 0;
                     opcode = 0;
                     alreadyDecoding = false;
-                    System.out.println(output.getClass());
                 }
                 return output;
             }

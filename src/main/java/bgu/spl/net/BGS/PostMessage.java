@@ -6,11 +6,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 public class PostMessage extends MessageFromClient {
 
     private String content, username;
-    private List<String> usernames;
+    private Vector<String> usernames;
     private boolean isDone;
 
     public PostMessage()
@@ -18,7 +19,7 @@ public class PostMessage extends MessageFromClient {
         super();
         content = "";
         username = null;
-        usernames = new LinkedList<>();
+        usernames = new Vector<>();
         isDone = false;
     }
 
@@ -28,12 +29,12 @@ public class PostMessage extends MessageFromClient {
 
         if (currentByte >= bytes.length)
             bytes = Arrays.copyOf(bytes, currentByte * 2);
-
         if(b == '\0')
         {
             if(username != null)
             {
-                usernames.add(username);
+                if(!usernames.contains(username))
+                    usernames.add(username);
                 username = null;
             }
             content = new String(bytes, 0, currentByte, StandardCharsets.UTF_8);
@@ -43,12 +44,15 @@ public class PostMessage extends MessageFromClient {
 
         if(b == ' ' & username != null)
         {
-            usernames.add(username);
+            if(!usernames.contains(username))
+                usernames.add(username);
             username = null;
         }
 
-        if(username != null)
-            username += b;
+        if(username != null) {
+            char c = (char)b;
+            username += c;
+        }
 
         if(b == '@' & username == null)
             username = "";
@@ -56,9 +60,11 @@ public class PostMessage extends MessageFromClient {
         bytes[currentByte] = b;
         currentByte++;
         return null;
+
+
     }
 
-    public List<String> getUsernames()
+    public Vector<String> getUsernames()
     {
         return usernames;
     }
@@ -82,4 +88,5 @@ public class PostMessage extends MessageFromClient {
     public boolean isDone() {
         return isDone;
     }
+
 }
